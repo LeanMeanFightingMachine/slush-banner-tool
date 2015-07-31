@@ -8,10 +8,24 @@ npm install
 ```
 
 #### Development
-To compile all files and start a webserver on [localhost:3000](http://localhost:3000):
+To start a webserver on [localhost:3000](http://localhost:3000):
 ```
 gulp
 ```
+
+#### Add new templates and variants
+You can create new templates and variants by running `gulp add`:
+```
+gulp add --template master --variant cat
+```
+
+Or if you want to omit the variant and create only the template:
+```
+gulp add --template master
+```
+
+But to create a variant, you always have to set the template you want to use.
+
 
 #### Build and Distribution
 The following command will run the following tasks:
@@ -25,4 +39,4 @@ The following command will run the following tasks:
 gulp build
 ```
 
-You will notice a new folder named `dist` in the root of your project, that's where all the distribution files will be kept, including the zip files.
+You will notice a new folder named `build` in the root of your project, that's where all the distribution files will be kept, including the zip files.
