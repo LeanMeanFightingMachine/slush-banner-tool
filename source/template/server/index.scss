@@ -1,0 +1,261 @@
+$color-header: #435964;
+$color-header-text: #FFFFFF;
+$color-background: #5E7C8B;
+$color-text: #CED7DB;
+$color-text-highlight: #FFFFFF;
+$color-accent: #FF3A7F;
+
+html, body {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.mc-banner {
+
+  font: normal 300 14px/24px Roboto, "Helvetica Neue", Helvetica, Arial, serif;
+
+  *, *:after, *:before {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+  }
+
+  h1, h2, h3, h4, h5, h6, p {
+    margin: 0 0 5px 0;
+    font-weight: 300;
+  }
+
+  strong {
+    font-weight: 500;
+  }
+
+  .main__list, .header__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    float: left;
+    width: 100%;
+  }
+
+  .main__item, .header__item {
+    display: block;
+    float: left;
+
+    &:not(:last-child) {
+      margin-right: 20px;
+    }
+  }
+
+  .main__link, .header__link {
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease-out, background 0.2s ease-out;
+  }
+
+
+  /**
+   * Main Styles
+   */
+  .main {
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .main__group {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 350px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+
+    @media all and (max-width: 600px) {
+      width: calc(100% - 20px) !important;
+    }
+  }
+
+  .main__title {
+    padding: 20px;
+    margin: 0;
+    background: $color-header;
+    color: $color-header-text;
+    border-radius: 3px 3px 0 0;
+    .zmdi {
+      margin-right: 5px;
+    }
+  }
+
+  .main__list {
+    padding: 20px;
+    background: $color-background;
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+  }
+
+  .main__link {
+    color: $color-text;
+
+    &:hover {
+      color: $color-text-highlight;
+    }
+  }
+
+
+
+  /**
+   * Header Styles
+   */
+  .header {
+    width: 100%;
+    height: 0px;
+    overflow: hidden;
+  }
+
+  .header__list {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: 50px;
+    background: $color-background;
+    color: $color-text;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .header__item {
+    height: 50px;
+    line-height: 50px;
+  }
+
+  .header__item--title, .header__item--fullscreen {
+    background: $color-header;
+    color: $color-header-text;
+    padding: 0 20px 0 16px;
+    line-height: 50px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .header__item--fullscreen {
+    padding: 0 16px;
+    float: right;
+    border-radius: 0px 3px 3px 0px;
+
+    .header__link--arrow {
+      margin-right: 0px;
+    }
+  }
+
+  .header__link {
+    color: $color-text;
+    height: 100%;
+    display: block;
+
+    &:hover {
+      color: $color-text-highlight;
+    }
+  }
+
+  .header__link--active {
+    color: $color-text-highlight;
+    cursor: default;
+
+    &:hover {
+      color: $color-text-highlight;
+    }
+  }
+
+  .header__link--arrow {
+    border: none;
+    margin-right: 10px;
+    margin-top: -2px;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    display: inline-block;
+    border-radius: 50%;
+    vertical-align: middle;
+    color: $color-header;
+    background: $color-header-text;
+
+    &:hover {
+      color: $color-text-highlight;
+      background: $color-accent;
+    }
+  }
+
+}
+
+
+// _config.scss
+$paddings: (
+  naked: 0px,
+  padded: 10px
+);
+
+.mc-banner-preview {
+  position: absolute;
+
+  @each $padding-key, $padding in $paddings {
+
+    &--#{$padding-key} {
+      left: $padding;
+      top: $padding * 7;
+    }
+
+    &--#{$padding-key} {
+      &-top-right, &-right-top {
+        right: $padding;
+        left: auto;
+      }
+
+      &-bottom-left, &-left-bottom {
+        bottom: $padding;
+        top: auto;
+      }
+
+      &-bottom-right, &-right-bottom {
+        right: $padding;
+        bottom: $padding;
+        left: auto;
+        top: auto;
+      }
+
+      &-center, &-middle, &-center-middle, &-middle-center {
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+      }
+
+      &-top-center, &-center-top {
+        left: 50%;
+        -webkit-transform: translate(-50%, 0);
+                transform: translate(-50%, 0);
+      }
+
+      &-bottom-center, &-center-bottom {
+        top: auto;
+        bottom: $padding;
+        left: 50%;
+        -webkit-transform: translate(-50%, 0);
+                transform: translate(-50%, 0);
+      }
+
+      &-left-middle, &-middle-left {
+        top: 50%;
+        -webkit-transform: translate(0, -50%);
+                transform: translate(0, -50%);
+      }
+
+      &-right-middle, &-middle-right {
+        top: 50%;
+        left: auto;
+        right: $padding;
+        -webkit-transform: translate(0, -50%);
+                transform: translate(0, -50%);
+      }
+    }
+  }
+}
