@@ -3,6 +3,7 @@ import gulp from 'gulp';
 import nodemon from 'gulp-nodemon';
 import browserSync from 'browser-sync';
 
+const port = process.env.PORT || 8000;
 let started = false;
 
 function startBrowserSync() {
@@ -15,7 +16,7 @@ function startBrowserSync() {
   bs.init({
     notify: true,
     open: false,
-    proxy: 'localhost:8000',
+    proxy: 'localhost:' + port,
     files: [ './source/js/*.js', './source/**/*.html', './source/**/*.yaml' ]
   });
 
