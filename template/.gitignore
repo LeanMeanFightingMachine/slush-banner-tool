@@ -19,5 +19,5 @@ Thumbs.db
 *.sublime-workspace
 
 node_modules/
-npm-debug.log
-*.todo
+build/
+*.map

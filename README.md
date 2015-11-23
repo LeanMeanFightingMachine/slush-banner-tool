@@ -1,42 +1,47 @@
-# Banner - Tool
+# slush-banner-tool
 
-## Running the project
+## Getting started
 
-#### Install node dependencies
-```
-npm install
-```
+- Install global dependencies:
 
-#### Development
-To start a webserver on [localhost:3000](http://localhost:3000):
-```
-gulp
+```bash
+npm install -g gulp slush
 ```
 
-#### Add new templates and variants
-You can create new templates and variants by running `gulp add`:
-```
-gulp add --template master --variant cat
-```
+- Install generator:
 
-Or if you want to omit the variant and create only the template:
-```
-gulp add --template master
+```bash
+npm install -g slush-banner-tool
 ```
 
-But to create a variant, you always have to set the template you want to use.
+## Usage
 
+- Create a new folder for your banner and cd into it:
 
-#### Build and Distribution
-The following command will run the following tasks:
-
-- Minify all files
-- Compress images
-- Inline all JavaScript and StyleSheets in your HTML
-- Create a distribution `.zip` file that contains only the assets used on that banner
-
-```
-gulp build
+```bash
+mkdir my-banner && cd $_
 ```
 
-You will notice a new folder named `build` in the root of your project, that's where all the distribution files will be kept, including the zip files.
+- Run the generator and answer the questions:
+
+```bash
+slush banner-tool
+```
+
+## Local development
+
+### Test
+
+- To test the generator locally run:
+
+```
+npm link
+```
+
+### Publish
+
+- To publish a new version of the generator to NPM run:
+
+```
+npm publish
+```
