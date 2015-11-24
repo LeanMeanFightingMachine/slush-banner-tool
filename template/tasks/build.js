@@ -28,7 +28,7 @@ function getIndex(name = 'server/index') {
 
   if (templates.has(name)) return templates.get(name);
 
-  const file = path.join(__dirname, '..', 'source/template', name) + '.html';
+  const file = path.join(__dirname, '..', 'source', name) + '.html';
   templates.set(name, Handlebars.compile(fs.readFileSync(file, 'utf8')));
   return templates.get(name);
 
