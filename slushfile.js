@@ -15,6 +15,11 @@ var questions = [
     validate: isEmpty
   },
   {
+    name: 'client',
+    message: 'Client\'s name?',
+    validate: isEmpty
+  },
+  {
     name: 'moveon',
     message: 'Continue?',
     type: 'confirm'
@@ -27,6 +32,21 @@ function isEmpty(answer) {
 
 };
 
+function getAuthor() {
+
+  var stdout = exec('git config user.name && git config user.email', { encoding: 'utf8' }).split('\n');
+  return stdout[ 0 ] + ' <' + stdout[ 1 ] + '>';
+
+}
+
+function getShortName(answers) {
+
+  var client = answers.client.toLowerCase();
+  var banner = answers.banner.toLowerCase();
+  return slug(client) + '_' + slug(banner);
+
+}
+
 gulp.task('default', function (done) {
 
   inquirer.prompt(questions, function (answers) {
@@ -38,6 +58,9 @@ gulp.task('default', function (done) {
       return done();
 
     }
+
+    answers.author = getAuthor();
+    answers.shortName = getShortName(answers);
 
     gulp.src(paths, { dot: true })
       .pipe(template(answers, {
