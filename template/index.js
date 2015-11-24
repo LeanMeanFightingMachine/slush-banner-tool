@@ -37,7 +37,7 @@ app.use(morgan('tiny'));
 app.use('/js', browserify('./source/js'));
 
 
-app.use('/index.js', express.static('./source/template/server/index.js'));
+app.use('/index.js', express.static(path.join(__dirname, './source/server/index.js')));
 
 
 // images
