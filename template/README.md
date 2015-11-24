@@ -1,4 +1,4 @@
-# Banner - Tool
+# <%= banner %> - <%= client %>
 
 ## Running the project
 

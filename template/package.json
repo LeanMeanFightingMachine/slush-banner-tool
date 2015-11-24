@@ -1,9 +1,12 @@
 {
-  "name": "banner-tool",
+  "name": "<%= shortName %>",
   "version": "0.0.1",
-  "description": "Banner - Tool",
+  "description": "<%= banner %> - <%= client %>",
   "main": "gulpfile.js",
   "private": true,
+  "authors": [
+    "<%= author %>"
+  ],
   "devDependencies": {
     "archiver": "^0.14.4",
     "babel-core": "^5.8.x",
