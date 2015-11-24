@@ -71,7 +71,7 @@ app.use('/css/:file', function(req, res) {
 app.get('/index.css', function(req, res) {
 
   sass.render({
-    file: path.join(__dirname, 'source/template/server/index.scss'),
+    file: path.join(__dirname, 'source/server/index.scss'),
     outputStyle: 'compressed' },
     function(err, result) {
 
@@ -99,14 +99,14 @@ app.get('/preview/:variant', function(req, res) {
 
   } catch (err) {
 
-    res.render('server/variant-not-found', { variant: variant });
+    res.render('../server/variant-not-found', { variant: variant });
 
   }
 
   if (doc) {
 
     template = path.join(app.get('views'), doc.config.template) + '.html';
-    doc.partials = { template: '../' + doc.config.template };
+    doc.partials = { template: '../template/' + doc.config.template };
     doc.config.listOfTemplates = getFiles(doc.config.template, variant);
     doc.config.includeIndexFiles = true;
     doc.config.hideNav = hideNav;
@@ -115,7 +115,7 @@ app.get('/preview/:variant', function(req, res) {
 
     fs.access(template, function(err) {
 
-      res.render(err ? 'server/template-not-found' : 'server/index', doc);
+      res.render(err ? '../server/template-not-found' : '../server/index', doc);
 
     });
 
@@ -128,7 +128,7 @@ app.get('/preview/:variant', function(req, res) {
 app.get(['/', '/preview'], function(req, res) {
 
   const files = getFiles();
-  res.render(files ? 'server/index' : 'server/empty', {
+  res.render(files ? '../server/index' : '../server/empty', {
     config: { files: getFiles(), includeIndexFiles: true }
   });
 
