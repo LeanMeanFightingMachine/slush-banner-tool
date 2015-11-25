@@ -30,6 +30,7 @@
     "gulp-file": "^0.2.0",
     "gulp-if": "^1.2.5",
     "gulp-nodemon": "^2.0.3",
+    "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.4",
     "handlebars": "^3.0.3",
     "map-files": "^0.7.4",
