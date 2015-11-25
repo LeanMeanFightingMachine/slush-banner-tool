@@ -8,14 +8,14 @@ import gutil from 'gulp-util';
 import merge from 'merge-stream';
 
 
-function getVariant(template) {
+function getVariant(template, profileId) {
 
   return `---
 config:
   template: ${template}
   align: top-left
 <% if (dynamic) { %>
-<% if (platform === 'doubleclick') { %>profileId: 1234567<% } %>
+<% if (platform === 'doubleclick') { %>profileId: ${profileId}<% } %>
 dynamic:
   - field1
 <% } %>
@@ -62,7 +62,6 @@ domready(function() {
   <% if (dynamic) { %>
   var variant = window.variant;
   var dynamic = variant.dynamic;
-
   <% if (platform === 'doubleclick') { %>
   var profileId = Number(variant.profileId);
   var elements = [];
@@ -153,10 +152,12 @@ export default function(cb) {
     .usage('Usage: gulp add [options]')
     .alias('v', 'variant').nargs('v', 1).describe('v', 'Set the variant name').demand(1)
     .alias('t', 'template').nargs('t', 1).describe('t', 'Set the template for your variant').demand(1)
+    .alias('p', 'profileid').nargs('v', 1).describe('v', 'Set the Doubleclick Profile ID for variant').demand(1)
     .alias('h', 'help').describe('h', 'Show this help info')
     .demand(['t'])
     .example('gulp add -v cat -t 300x250', 'Add a new variant "cat" using the template "300x250"')
-    .example('gulp add -t 640x480', 'Create a new template named "640x480"');
+    .example('gulp add -t 640x480', 'Create a new template named "640x480"')
+    .example('gulp add -v cat -t 300x250 -p 1234567', 'Add a new variant with the Profile ID "1234567"');
 
 
   if (argv.help) {
@@ -174,9 +175,11 @@ export default function(cb) {
 
     } catch(err) {
 
-    const content = getVariant(argv.template);
-    variant = file(`${argv.variant}.yaml`, content, { src: true })
-                    .pipe(gulp.dest('./source/variants'));
+      let profileId = argv.profileid || 1234567;
+
+      const content = getVariant(argv.template, profileId);
+      variant = file(`${argv.variant}.yaml`, content, { src: true })
+                      .pipe(gulp.dest('./source/variants'));
 
     }
 

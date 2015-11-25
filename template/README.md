@@ -30,7 +30,12 @@ You can also create a variant by cloning an existing one:
 ```
 gulp clone --input cat --destination dog
 ```
-
+<% if (platform === 'doubleclick') { %>
+You can set the Doubleclick Profile ID to use for the variant:
+```
+gulp add --template master --variant cat --profileid 1234567
+```
+<% } %>
 #### Build and Distribution
 The following command will run the following tasks:
 
