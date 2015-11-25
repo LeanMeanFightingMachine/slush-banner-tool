@@ -20,6 +20,12 @@ var questions = [
     validate: isEmpty
   },
   {
+    name: 'dynamic',
+    message: 'Dynamic?',
+    default: false,
+    type: 'confirm'
+  },
+  {
     name: 'moveon',
     message: 'Continue?',
     type: 'confirm'
@@ -69,7 +75,7 @@ gulp.task('default', function (done) {
       .on('error', console.error.bind(console))
       .pipe(conflict('./'))
       .pipe(gulp.dest('./'))
-      .pipe(install())
+      // .pipe(install())
       .on('end', done)
       .resume();
 

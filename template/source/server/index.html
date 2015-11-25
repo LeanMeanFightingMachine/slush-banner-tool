@@ -93,6 +93,23 @@
     </div>
     {{/if}}
 
+    <% if (dynamic) { %>
+    <script>
+      var variant = {};
+      variant.dynamic = getDynamicFields();
+
+      function getDynamicFields() {
+        var dynamic = [];
+
+        {{#each dynamic}}
+          dynamic.push("{{.}}");
+        {{/each}}
+
+        return dynamic;
+      }
+    </script>
+    <% } %>
+
     <script src="/js/{{config.template}}.js" inline></script>
     {{/if}}
 

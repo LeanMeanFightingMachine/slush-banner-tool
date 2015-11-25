@@ -14,13 +14,19 @@ function getVariant(template) {
 config:
   template: ${template}
   align: top-left
+<% if (dynamic) { %>
+dynamic:
+  - field1
+<% } %>
 `;
 
 }
 function getTemplate() {
 
   return `<div class="layout">
-
+    <% if (dynamic) { %>
+      <div id="{{dynamic.[0]}}"></div>
+    <% } %>
 </div>`;
 
 }
@@ -43,6 +49,10 @@ function getJS() {
 
 domready(function() {
 
+  <% if (dynamic) { %>
+  var variant = window.variant;
+  var dynamic = variant.dynamic;
+  <% } %>
 
 });`;
 
