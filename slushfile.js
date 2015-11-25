@@ -26,6 +26,18 @@ var questions = [
     type: 'confirm'
   },
   {
+    name: 'platform',
+    message: 'Which platform?',
+    type: 'list',
+    choices: [
+      'none',
+      'doubleclick'
+    ],
+    when: function (answers) {
+      return answers.dynamic;
+    }
+  },
+  {
     name: 'moveon',
     message: 'Continue?',
     type: 'confirm'
@@ -75,7 +87,7 @@ gulp.task('default', function (done) {
       .on('error', console.error.bind(console))
       .pipe(conflict('./'))
       .pipe(gulp.dest('./'))
-      // .pipe(install())
+      .pipe(install())
       .on('end', done)
       .resume();
 

@@ -14,6 +14,10 @@
     {{/unless}}
     {{/if}}
 
+    <% if (platform === 'doubleclick') { %>
+    <script src="http://s0.2mdn.net/ads/studio/Enabler.js"></script>
+    <% } %>
+
     {{#if config.template}}
     <link rel="stylesheet" href="/css/{{config.template}}.css" inline>
     {{/if}}
@@ -97,6 +101,7 @@
     <script>
       var variant = {};
       variant.dynamic = getDynamicFields();
+      <% if (platform === 'doubleclick') { %>variant.profileId = "{{profileId}}";<% } %>
 
       function getDynamicFields() {
         var dynamic = [];
@@ -107,6 +112,26 @@
 
         return dynamic;
       }
+    </script>
+    <% } %>
+
+    <% if (platform === 'doubleclick') { %>
+    <script language="javascript">
+    	window.onload = function() {
+    		if (Enabler.isInitialized()) {
+    			init();
+    		} else {
+    			Enabler.addEventListener(studio.events.StudioEvent.INIT, init);
+    		}
+    	}
+
+    	function init() {
+    		if (Enabler.isPageLoaded()) {
+    			politeInit();
+    		} else {
+    			Enabler.addEventListener(studio.events.StudioEvent.PAGE_LOADED, politeInit);
+    		}
+    	}
     </script>
     <% } %>
 

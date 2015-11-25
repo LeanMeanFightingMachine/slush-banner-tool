@@ -15,6 +15,7 @@ config:
   template: ${template}
   align: top-left
 <% if (dynamic) { %>
+<% if (platform === 'doubleclick') { %>profileId: 1234567<% } %>
 dynamic:
   - field1
 <% } %>
@@ -40,7 +41,17 @@ function getCSS() {
 
 body {
   font: normal 300 16px/24px "Helvetica Neue", Helvetica, Arial, serif;
-}`;
+}
+<% if (platform === 'doubleclick') { %>
+.layout {
+  display: none;
+
+  &[loaded] {
+    display: block;
+  }
+}
+<% } %>
+`;
 
 }
 function getJS() {
@@ -48,12 +59,84 @@ function getJS() {
   return `var domready = require('domready');
 
 domready(function() {
-
   <% if (dynamic) { %>
   var variant = window.variant;
   var dynamic = variant.dynamic;
-  <% } %>
 
+  <% if (platform === 'doubleclick') { %>
+  var profileId = Number(variant.profileId);
+  var elements = [];
+
+  politeInit = function() {
+
+  	addListeners();
+
+  	getDynamic();
+
+  }
+
+  addListeners = function() {
+
+    // bgExit.addEventListener('click', bgExitHandler, false);
+
+  }
+
+  bgExitHandler = function (e) {
+
+  	Enabler.exit('HTML5_Background_Clickthrough');
+
+  }
+
+  getElement = function (el) {
+
+    var ref = document.getElementById(el);
+    elements.push(ref);
+
+  }
+
+  getDynamic = function() {
+
+  	Enabler.setProfileId(profileId);
+
+    var devDynamicContent = {};
+    devDynamicContent.Profile = [{}];
+
+    dynamic.map(function (field, i) {
+
+      getElement(field);
+
+      devDynamicContent.Profile[0]._id = i;
+      devDynamicContent.Profile[0][field] = 'This is ' + field;
+
+    });
+
+    Enabler.setDevDynamicContent(devDynamicContent);
+
+  	setDynamic();
+
+  }
+
+  setDynamic = function() {
+
+    elements.map(function (el, i) {
+
+      el.innerHTML = dynamicContent.Profile[0][el.id];
+
+    });
+
+    renderBanner();
+
+  }
+
+  renderBanner = function() {
+
+    var layout = document.querySelector('.layout');
+
+    layout.setAttribute("loaded", "true");
+
+  }
+  <% } %>
+  <% } %>
 });`;
 
 }
