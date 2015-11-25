@@ -7,6 +7,8 @@ import Map from 'es6-map';
 import sass from 'node-sass';
 import gutil from 'gulp-util';
 import through from 'through2';
+import postcss from 'postcss';
+import autoprefixer from 'autoprefixer';
 import concatStream from 'concat-stream';
 import browserify from 'browserify';
 import {Promise} from 'es6-promise';
@@ -93,8 +95,13 @@ function loadStyle(name) {
 
     sass.render({ file, outputStyle }, (err, result) => {
 
-        styles.set(name, err ? err.toString() : result.css.toString());
-        resolve(styles.get(name));
+      const css = postcss()
+        .use(autoprefixer({ browsers: ['last 2 versions', 'ie 9'] }))
+        .process(result.css.toString()).css;
+
+
+      styles.set(name, err ? err.toString() : css);
+      resolve(styles.get(name));
 
     });
 
