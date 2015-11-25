@@ -26,6 +26,10 @@ gulp add --template master
 
 But to create a variant, you always have to set the template you want to use.
 
+You can also create a variant by cloning an existing one:
+```
+gulp clone --input cat --destination dog
+```
 
 #### Build and Distribution
 The following command will run the following tasks:
