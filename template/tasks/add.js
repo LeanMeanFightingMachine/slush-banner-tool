@@ -18,13 +18,14 @@ config:
 <% if (platform === 'doubleclick') { %>profileId: ${profileId}<% } %>
 dynamic:
   - field1
+  - Exit_URL
 <% } %>
 `;
 
 }
 function getTemplate() {
 
-  return `<div class="layout">
+  return `<div class="layout" size="{{size.width}}x{{size.height}}">
     <% if (dynamic) { %>
       <div id="{{dynamic.[0]}}"></div>
     <% } %>
@@ -63,26 +64,16 @@ domready(function() {
   var variant = window.variant;
   var dynamic = variant.dynamic;
   <% if (platform === 'doubleclick') { %>
-  var profileId = Number(variant.profileId);
   var elements = [];
+
+  var devContent = [
+    'This is field 1',
+    {Url: 'http://mcsaatchi.com/'}
+  ];
 
   politeInit = function() {
 
-  	addListeners();
-
   	getDynamic();
-
-  }
-
-  addListeners = function() {
-
-    // bgExit.addEventListener('click', bgExitHandler, false);
-
-  }
-
-  bgExitHandler = function (e) {
-
-  	Enabler.exit('HTML5_Background_Clickthrough');
 
   }
 
@@ -95,7 +86,7 @@ domready(function() {
 
   getDynamic = function() {
 
-  	Enabler.setProfileId(profileId);
+    // TODO - \`Profile\` should match the element name of the dynamic content feed uploaded to Doubleclick
 
     var devDynamicContent = {};
     devDynamicContent.Profile = [{}];
@@ -104,8 +95,7 @@ domready(function() {
 
       getElement(field);
 
-      devDynamicContent.Profile[0]._id = i;
-      devDynamicContent.Profile[0][field] = 'This is ' + field;
+      devDynamicContent.Profile[0][field] = devContent[i];
 
     });
 
@@ -119,7 +109,9 @@ domready(function() {
 
     elements.map(function (el, i) {
 
-      el.innerHTML = dynamicContent.Profile[0][el.id];
+      if (el) {
+        el.innerHTML = dynamicContent.Profile[0][el.id];
+      }
 
     });
 
@@ -130,8 +122,15 @@ domready(function() {
   renderBanner = function() {
 
     var layout = document.querySelector('.layout');
+    var Exit_URL = dynamicContent.Profile[0]['Exit_URL'].Url;
 
     layout.setAttribute("loaded", "true");
+
+    layout.addEventListener('click', function (e) {
+
+      Enabler.exitOverride('HTML5_Background_Clickthrough', Exit_URL);
+
+    }, false);
 
   }
   <% } %>

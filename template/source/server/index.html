@@ -101,7 +101,6 @@
     <script>
       var variant = {};
       variant.dynamic = getDynamicFields();
-      <% if (platform === 'doubleclick') { %>variant.profileId = "{{profileId}}";<% } %>
 
       function getDynamicFields() {
         var dynamic = [];
@@ -117,6 +116,8 @@
 
     <% if (platform === 'doubleclick') { %>
     <script language="javascript">
+      Enabler.setProfileId({{profileId}});
+
     	window.onload = function() {
     		if (Enabler.isInitialized()) {
     			init();
