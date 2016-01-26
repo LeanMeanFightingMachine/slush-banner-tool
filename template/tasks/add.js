@@ -34,7 +34,18 @@ function getTemplate() {
 }
 function getCSS() {
 
-  return `html, body {
+  return `/* set global box-sizing */
+  html {
+    box-sizing: border-box;
+  }
+
+  * {
+    &, &:before, &:after {
+      box-sizing: inherit;
+    }
+  }
+
+  html, body {
   margin: 0;
   padding: 0;
   border: none;
@@ -45,6 +56,7 @@ body {
 }
 <% if (platform === 'doubleclick') { %>
 .layout {
+  border: 1px solid grey;
   display: none;
 
   &[loaded] {
