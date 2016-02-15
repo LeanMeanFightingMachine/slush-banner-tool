@@ -50,7 +50,7 @@ npm publish
 
 The tool uses [`gulp-template`](https://github.com/sindresorhus/gulp-template) to precompile lodash templates. However, the generated Gulp tasks also use this module. To prevent conflict, two different [interpolation regexs](https://lodash.com/docs#templateSettings-interpolate) are used:
 
-- `<% %>` is used by the Slush generator
-- `{{ }}` is used by the generated Gulp tasks
+- `<% %>` (default) is used by the Slush generator
+- `${ }` (ES6-style) is used by the generated Gulp tasks
 
 See the [lodash docs](https://lodash.com/docs#template) for more info.

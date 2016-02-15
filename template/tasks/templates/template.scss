@@ -1,0 +1,30 @@
+/* set global box-sizing */
+html {
+  box-sizing: border-box;
+}
+
+* {
+  &, &:before, &:after {
+    box-sizing: inherit;
+  }
+}
+
+html, body {
+margin: 0;
+padding: 0;
+border: none;
+}
+
+body {
+font: normal 300 16px/24px "Helvetica Neue", Helvetica, Arial, serif;
+}
+<% if (platform === 'doubleclick') { %>
+.layout {
+border: 1px solid grey;
+display: none;
+
+  &[loaded] {
+    display: block;
+  }
+}
+<% } %>

@@ -9,145 +9,10 @@ import gtemplate from 'gulp-template';
 import rename from 'gulp-rename';
 import merge from 'merge-stream';
 
-function getTemplate() {
-
-  return `<div class="layout" size="{{size.width}}x{{size.height}}">
-    <% if (dynamic) { %>
-      <div id="{{dynamic.[0]}}"></div>
-    <% } %>
-</div>`;
-
-}
-function getCSS() {
-
-  return `/* set global box-sizing */
-  html {
-    box-sizing: border-box;
-  }
-
-  * {
-    &, &:before, &:after {
-      box-sizing: inherit;
-    }
-  }
-
-  html, body {
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-body {
-  font: normal 300 16px/24px "Helvetica Neue", Helvetica, Arial, serif;
-}
-<% if (platform === 'doubleclick') { %>
-.layout {
-  border: 1px solid grey;
-  display: none;
-
-  &[loaded] {
-    display: block;
-  }
-}
-<% } %>
-`;
-
-}
-function getJS() {
-
-  return `var domready = require('domready');
-
-domready(function() {
-  <% if (dynamic) { %>
-  var variant = window.variant;
-  var dynamic = variant.dynamic;
-  <% if (platform === 'doubleclick') { %>
-  var elements = [];
-
-  var devContent = [
-    'This is field 1',
-    {Url: 'http://mcsaatchi.com/'}
-  ];
-
-  politeInit = function() {
-
-  	getDynamic();
-
-  }
-
-  getElement = function (el) {
-
-    var ref = document.getElementById(el);
-    elements.push(ref);
-
-  }
-
-  getDynamic = function() {
-
-    // TODO - \`Profile\` should match the element name of the dynamic content feed uploaded to Doubleclick
-
-    var devDynamicContent = {};
-    devDynamicContent.Profile = [{}];
-
-    dynamic.map(function (field, i) {
-
-      getElement(field);
-
-      devDynamicContent.Profile[0][field] = devContent[i];
-
-    });
-
-    Enabler.setDevDynamicContent(devDynamicContent);
-
-  	setDynamic();
-
-  }
-
-  setDynamic = function() {
-
-    elements.map(function (el, i) {
-
-      if (el) {
-        el.innerHTML = dynamicContent.Profile[0][el.id];
-      }
-
-    });
-
-    renderBanner();
-
-  }
-
-  renderBanner = function() {
-
-    var layout = document.querySelector('.layout');
-    var Exit_URL = dynamicContent.Profile[0]['Exit_URL'].Url;
-
-    layout.setAttribute("loaded", "true");
-
-    layout.addEventListener('click', function (e) {
-
-      Enabler.exitOverride('HTML5_Background_Clickthrough', Exit_URL);
-
-    }, false);
-
-  }
-  <% } %>
-  <% } %>
-});`;
-
-}
-
-const templates = {
-  variantCSS: 'variant.scss',
-  variantYAML: 'variant.yaml'
-};
-
 function createFile(src, dest, filename, data) {
 
   return gulp.src(src)
-    .pipe(gtemplate(data, {
-      interpolate: /{{([\s\S]+?)}}/g
-    }))
+    .pipe(gtemplate(data))
     .pipe(rename({
       basename: filename
     }))
@@ -155,9 +20,39 @@ function createFile(src, dest, filename, data) {
 
 }
 
-function variantCSS(argv) {
+function templateCss(argv) {
 
-  const src = path.join(__dirname, 'templates', templates.variantCSS);
+  const src = path.join(__dirname, 'templates', 'template.scss');
+  const dest = './source/css';
+  const filename = argv.template;
+
+  return createFile(src, dest, filename, argv);
+
+}
+
+function templateHtml(argv) {
+
+  const src = path.join(__dirname, 'templates', 'template.html');
+  const dest = './source/template';
+  const filename = argv.template;
+
+  return createFile(src, dest, filename, argv);
+
+}
+
+function templateJs(argv) {
+
+  const src = path.join(__dirname, 'templates', 'template.js');
+  const dest = './source/js';
+  const filename = argv.template;
+
+  return createFile(src, dest, filename, argv);
+
+}
+
+function variantCss(argv) {
+
+  const src = path.join(__dirname, 'templates', 'variant.scss');
   const dest = './source/css';
   const filename = argv.variant;
 
@@ -165,9 +60,9 @@ function variantCSS(argv) {
 
 }
 
-function variantYAML(argv) {
+function variantYaml(argv) {
 
-  const src = path.join(__dirname, 'templates', templates.variantYAML);
+  const src = path.join(__dirname, 'templates', 'variant.yaml');
   const dest = './source/variants';
   const filename = argv.variant;
 
@@ -213,8 +108,8 @@ export default function(cb) {
       if (typeof argv.profileid === 'undefined') argv.profileid = 1234567;
       <% } %>
 
-      const variantyaml = variantYAML(argv);
-      const variantcss = variantCSS(argv);
+      const variantyaml = variantYaml(argv);
+      const variantcss = variantCss(argv);
 
       variant = merge(variantyaml, variantcss);
 
@@ -228,12 +123,9 @@ export default function(cb) {
 
   } catch(err) {
 
-    template = file(`${argv.template}.html`, getTemplate(), { src: true })
-                    .pipe(gulp.dest('./source/template'));
-    js = file(`${argv.template}.js`, getJS(), { src: true })
-                    .pipe(gulp.dest('./source/js'));
-    css = file(`${argv.template}.scss`, getCSS(), { src: true })
-                    .pipe(gulp.dest('./source/css'));
+    template = templateHtml(argv);
+    js = templateJs(argv);
+    css = templateCss(argv);
 
   }
 
