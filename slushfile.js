@@ -71,14 +71,12 @@ gulp.task('default', function (done) {
 
     var paths = [path.join(__dirname, '/template/**')];
 
-    if (!answers.moveon) {
-
-      return done();
-
-    }
+    if (!answers.moveon) return done();
 
     answers.author = getAuthor();
     answers.shortName = getShortName(answers);
+
+    if (typeof answers.platform === 'undefined') answers.platform = null;
 
     gulp.src(paths, { dot: true })
       .pipe(template(answers, {
