@@ -5,24 +5,10 @@ import yargs from 'yargs';
 import gulpif from 'gulp-if';
 import file from 'gulp-file';
 import gutil from 'gulp-util';
+import gtemplate from 'gulp-template';
+import rename from 'gulp-rename';
 import merge from 'merge-stream';
 
-
-function getVariant(template, profileId) {
-
-  return `---
-config:
-  template: ${template}
-  align: top-left
-<% if (dynamic) { %>
-<% if (platform === 'doubleclick') { %>profileId: ${profileId}<% } %>
-dynamic:
-  - field1
-  - Exit_URL
-<% } %>
-`;
-
-}
 function getTemplate() {
 
   return `<div class="layout" size="{{size.width}}x{{size.height}}">
@@ -151,6 +137,43 @@ domready(function() {
 
 }
 
+const templates = {
+  variantCSS: 'variant.scss',
+  variantYAML: 'variant.yaml'
+};
+
+function createFile(src, dest, filename, data) {
+
+  return gulp.src(src)
+    .pipe(gtemplate(data, {
+      interpolate: /{{([\s\S]+?)}}/g
+    }))
+    .pipe(rename({
+      basename: filename
+    }))
+    .pipe(gulp.dest(dest));
+
+}
+
+function variantCSS(argv) {
+
+  const src = path.join(__dirname, 'templates', templates.variantCSS);
+  const dest = './source/css';
+  const filename = argv.variant;
+
+  return createFile(src, dest, filename, argv);
+
+}
+
+function variantYAML(argv) {
+
+  const src = path.join(__dirname, 'templates', templates.variantYAML);
+  const dest = './source/variants';
+  const filename = argv.variant;
+
+  return createFile(src, dest, filename, argv);
+
+}
 
 export default function(cb) {
 
@@ -186,11 +209,14 @@ export default function(cb) {
 
     } catch(err) {
 
-      let profileId = argv.profileid || 1234567;
+      <% if (platform === 'doubleclick') { %>
+      if (typeof argv.profileid === 'undefined') argv.profileid = 1234567;
+      <% } %>
 
-      const content = getVariant(argv.template, profileId);
-      variant = file(`${argv.variant}.yaml`, content, { src: true })
-                      .pipe(gulp.dest('./source/variants'));
+      const variantyaml = variantYAML(argv);
+      const variantcss = variantCSS(argv);
+
+      variant = merge(variantyaml, variantcss);
 
     }
 

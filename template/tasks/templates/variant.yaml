@@ -1,0 +1,12 @@
+---
+config:
+  template: {{ template }}
+  variant: {{ variant }}
+  align: top-left
+
+<% if (dynamic) { %>
+<% if (platform === 'doubleclick') { %>profileId: {{ profileid }}<% } %>
+dynamic:
+  - field1
+  - Exit_URL
+<% } %>
