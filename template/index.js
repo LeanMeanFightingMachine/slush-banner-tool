@@ -10,7 +10,6 @@ var Handlebars = require('handlebars');
 var mapFiles = require('map-files');
 var postcss = require('postcss');
 var autoprefixer = require('autoprefixer');
-var prefix = require('postcss-selector-prefix');
 var bodyParser = require('body-parser');
 var browserify = require('browserify-middleware');
 
@@ -58,7 +57,6 @@ app.use('/css/:file', function(req, res) {
 
       var css = postcss()
           .use(autoprefixer({ browsers: ['last 2 versions', 'ie 9'] }))
-          .use(prefix('.mc-banner-preview'))
           .process(result.css.toString()).css;
 
       res.header('Content-type', 'text/css');
