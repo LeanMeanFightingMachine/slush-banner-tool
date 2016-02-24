@@ -16,10 +16,12 @@ import Minimize from 'minimize';
 import Handlebars from 'handlebars';
 import archiver from 'archiver';
 import filesize from 'filesize';
+import imagemin from 'imagemin';
 
 
 const MATCH_IMG = /(\.{1,2}\/)?(img\/[\w\s-\/]+\.(png|jpg|jpeg|gif|svg))/g;
 const MATCH_INLINE = /<(script|link).*[href|src]=["|'](.*)["|'].*inline.*>/g;
+const MATCH_FONTS = /(fonts\/[\w\-\/]+\.(?:eot|woff|ttf|svg))/g;
 
 const templates = new Map();
 const scripts = new Map();
@@ -117,30 +119,79 @@ function loadAsset(type, name) {
 }
 
 
-function getImages(html) {
+function loadImages(html) {
 
   let match = MATCH_IMG.exec(html);
+  let complete = false;
+  let tempImages = [];
+  let images = [];
 
-  const images = [];
+  return new Promise((resolve, reject) => {
 
-  while (match !== null) {
+    while (match !== null) {
 
-    const absolute = path.join(__dirname, '..', 'source', match[2]);
-    const relative = match[2];
+      const absolute = path.join(__dirname, '..', 'source', match[2]);
+      const relative = match[2];
+
+      try {
+
+        const { size } = fs.statSync(absolute);
+
+        tempImages.push({ absolute, relative, size });
+
+
+      } catch(err) {}
+
+      match = MATCH_IMG.exec(html);
+
+    }
+
+    tempImages.forEach(function(image, index){
+
+      new imagemin()
+        .src(image.absolute)
+        .use(imagemin.jpegtran({progressive: true}))
+        .run(function(err, files){
+
+          let file = files[0];
+          const size = file.contents.byteLength;
+
+          images.push({ file, relative: image.relative, size });
+
+          if (images.length === tempImages.length) {
+            resolve(images);
+          }
+
+        })
+
+    })
+
+  });
+
+}
+
+function getFonts(html) {
+
+  let matches = MATCH_FONTS.exec(html);
+  let fonts = []
+
+  while (matches !== null) {
+
+    const absolute = path.join(__dirname, '..', 'source', matches[0]);
+    const relative = matches[0];
 
     try {
 
       const { size } = fs.statSync(absolute);
-      images.push({ absolute, relative, size });
+      fonts.push({absolute, relative, size});
 
     } catch(err) {}
 
-
-    match = MATCH_IMG.exec(html);
+    matches = MATCH_FONTS.exec(html);
 
   }
 
-  return images;
+  return fonts;
 
 }
 
@@ -183,37 +234,48 @@ function parseVariants() {
 
       minimize.parse(html, (err, data) => {
 
-        getImages(html).forEach((image) => {
-
-          totalSize += image.size;
-          archive.file(image.absolute, { name: image.relative });
-
-        });
-
         totalSize += Buffer.byteLength(data, 'utf8');
+
+        getFonts(html).forEach((font) => {
+
+          totalSize += font.size;
+          archive.file(font.absolute, {name: font.relative});
+
+        })
 
         archive.append(new Buffer(data), {
           name: path.basename(file.path, '.yaml') + '.html'
         });
 
-        archive.pipe(concatStream((data) => {
+        loadImages(html).then(function(imageBuffers){
 
-          const fileName = path.basename(file.path, '.yaml');
+          imageBuffers.forEach(function(image){
 
-          this.push(new gutil.File({
-            cwd: file.cwd,
-            base: file.base,
-            path: path.join(file.base, fileName) + '.zip',
-            contents: data
+            totalSize += image.size;
+            archive.append(image.file.contents, {name: image.relative});
+
+          });
+
+          archive.pipe(concatStream((data) => {
+
+            const fileName = path.basename(file.path, '.yaml');
+
+            this.push(new gutil.File({
+              cwd: file.cwd,
+              base: file.base,
+              path: path.join(file.base, fileName) + '.zip',
+              contents: data
+            }));
+
+            gutil.log(`${gutil.colors.cyan(fileName)}: ${filesize(totalSize)}`);
+
+            cb();
+
           }));
 
-          gutil.log(`${gutil.colors.cyan(fileName)}: ${filesize(totalSize)}`);
+          archive.finalize();
 
-          cb();
-
-        }));
-
-        archive.finalize();
+        }.bind(this))
 
       });
 
