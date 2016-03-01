@@ -18,6 +18,7 @@ import archiver from 'archiver';
 import filesize from 'filesize';
 import imagemin from 'imagemin';
 
+import { createBackupGif } from "./gif";
 
 const MATCH_IMG = /(\.{1,2}\/)?(img\/[\w\s-\/]+\.(png|jpg|jpeg|gif|svg))/g;
 const MATCH_INLINE = /<(script|link).*[href|src]=["|'](.*)["|'].*inline.*>/g;
@@ -200,6 +201,9 @@ function parseVariants() {
 
   return through.obj(function(file, enc, cb) {
 
+    const fileName = path.basename(file.path, '.yaml');
+
+    gutil.log(`${gutil.colors.cyan(fileName)}: Building...`);
 
     const data = yaml.parse(file.contents.toString());
     const template = getIndex();
@@ -232,9 +236,9 @@ function parseVariants() {
 
       });
 
-      minimize.parse(html, (err, data) => {
+      minimize.parse(html, (err, htmlData) => {
 
-        totalSize += Buffer.byteLength(data, 'utf8');
+        totalSize += Buffer.byteLength(htmlData, 'utf8');
 
         getFonts(html).forEach((font) => {
 
@@ -243,7 +247,7 @@ function parseVariants() {
 
         })
 
-        archive.append(new Buffer(data), {
+        archive.append(new Buffer(htmlData), {
           name: path.basename(file.path, '.yaml') + '.html'
         });
 
@@ -256,24 +260,34 @@ function parseVariants() {
 
           });
 
-          archive.pipe(concatStream((data) => {
+          createBackupGif(data, fileName).then(function(gif){
 
-            const fileName = path.basename(file.path, '.yaml');
+            if (gif) {
 
-            this.push(new gutil.File({
-              cwd: file.cwd,
-              base: file.base,
-              path: path.join(file.base, fileName) + '.zip',
-              contents: data
+              totalSize += gif.size;
+              archive.append(gif.file, {name: gif.name});
+
+            }
+
+            archive.pipe(concatStream((htmlData) => {
+
+              this.push(new gutil.File({
+                cwd: file.cwd,
+                base: file.base,
+                path: path.join(file.base, fileName) + '.zip',
+                contents: htmlData
+              }));
+
+              gutil.log(`${gutil.colors.cyan(fileName)}: ${filesize(totalSize)}`);
+
+              cb();
+
             }));
 
-            gutil.log(`${gutil.colors.cyan(fileName)}: ${filesize(totalSize)}`);
+            archive.finalize();
 
-            cb();
+          }.bind(this));
 
-          }));
-
-          archive.finalize();
 
         }.bind(this))
 

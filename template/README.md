@@ -30,12 +30,7 @@ You can also create a variant by cloning an existing one:
 ```
 gulp clone --input cat --destination dog
 ```
-<% if (platform === 'doubleclick') { %>
-You can set the Doubleclick Profile ID to use for the variant:
-```
-gulp add --template master --variant cat --profileid 1234567
-```
-<% } %>
+
 #### Build and Distribution
 The following command will run the following tasks:
 
@@ -47,5 +42,22 @@ The following command will run the following tasks:
 ```
 gulp build
 ```
+
+#### GIF Generation
+GIFs can be generated with the build by specifying a GIF object on the variant config object.
+
+This requires casperjs installed globally
+
+```
+npm install casperjs -g
+```
+
+
+- cues: An array of integers in milliseconds for when each frame needs to be captured (Required)
+- selector: A string class/ID of the element to capture (Required)
+- repeat: Integer of to repeat the backup gif (Default: 0/infinite)
+- delay: Integer to set how long each frame of the GIF is visible (Default: 5000)
+- quality: Integer to set the quality of the outputted GIF (Default: 10)
+
 
 You will notice a new folder named `build` in the root of your project, that's where all the distribution files will be kept, including the zip files.
